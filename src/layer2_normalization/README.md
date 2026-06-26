@@ -14,6 +14,14 @@ Only rows that cannot be resolved here are escalated to Layer 3 agents.
 
 Normalizes raw MKT strings so that variations of the same part number become identical strings.
 
+**Input field — data-specific decision:**
+Normalization runs on `manufacturer_model`, not `mkt_raw`.
+In this dataset (`proj_2026_001`), `mkt_raw` is empty for the vast majority of rows;
+contractors filled in `manufacturer_model` instead.
+If a future dataset reverses this pattern, the fallback in `normalize_file()` already
+tries `mkt_raw` when `manufacturer_model` is empty, so no logic change is needed —
+only the priority order would need to flip.
+
 **Steps applied in order:**
 1. Lowercase everything
 2. Strip leading/trailing whitespace
