@@ -138,7 +138,7 @@ See `IMPLEMENTATION_ORDER.md` for the full step-by-step guide with prompts.
 
 Current status:
 - [x] Step 1 — `schema.py` ✓
-- [ ] Step 2 — `excel_reader.py`
+- [x] Step 2 — `excel_reader.py` ✓
 - [ ] Step 3 — `text_normalizer.py`
 - [ ] Step 4 — `spec_extractor.py`
 - [ ] Step 5 — `math_validator.py`
