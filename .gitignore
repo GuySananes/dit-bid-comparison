@@ -1,4 +1,3 @@
-config/settings.py
 data/raw/
 data/processed/
 data/output/
