@@ -146,8 +146,8 @@ Current status:
 - [x] Step 7 — `store.py` (Vector DB) ✓
 - [x] Step 8 — `embeddings.py` ✓
 - [x] Step 9 — `agent_a_ambiguity.py` ✓
-- [ ] Step 10 — `agent_b_deviation.py`
-- [ ] Step 11 — `build_comparison_table.py`
+- [x] Step 10 — `agent_b_deviation.py` ✓
+- [x] Step 11 — `build_comparison_table.py` ✓
 - [ ] Step 12 — `agent_c_ref_sheet.py`
 - [ ] Step 13 — `agent_d_summary.py`
 - [ ] Step 14 — `main.py`

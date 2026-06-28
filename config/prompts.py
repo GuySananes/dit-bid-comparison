@@ -96,6 +96,30 @@ Return JSON:
 }}
 """
 
+AGENT_B_BATCH_USER = """
+Evaluate each item and determine whether the contractor's offer meets the BOQ specification.
+
+Items (JSON array):
+{items_json}
+
+Each item has: index, boq_description, boq_specs (extracted numeric specs from the tender),
+contractor_description (model + notes from the contractor), contractor_specs (extracted from
+contractor text), rag_context (past rulings from similar projects).
+
+Return a JSON array — one object per item, in the same order as the input:
+[
+  {{
+    "index": 0,
+    "deviation_detected": true | false,
+    "severity": "none" | "minor" | "major" | "disqualifying",
+    "deviating_fields": ["brightness_nit", ...],
+    "reasoning": "one or two sentence explanation",
+    "recommendation": "accept | accept_with_note | request_replacement | disqualify",
+    "rag_sources_used": ["source_id_1", ...]
+  }}
+]
+"""
+
 # ── Agent C — Contractor Reference Sheet ─────────────────────────────────────
 AGENT_C_SYSTEM = """
 You are writing a formal but clear technical letter to a contractor.
