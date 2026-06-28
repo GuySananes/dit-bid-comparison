@@ -150,7 +150,7 @@ Current status:
 - [x] Step 11 — `build_comparison_table.py` ✓
 - [x] Step 12 — `agent_c_ref_sheet.py` ✓
 - [x] Step 13 — `agent_d_summary.py` ✓
-- [ ] Step 14 — `main.py`
+- [x] Step 14 — `main.py` ✓
 - [ ] Step 15 — tests
 
 ---
