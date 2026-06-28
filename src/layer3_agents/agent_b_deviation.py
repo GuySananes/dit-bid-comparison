@@ -21,11 +21,24 @@ logger = logging.getLogger(__name__)
 # Specs that are purely pipeline bookkeeping — never sent to the LLM
 _META_KEYS = frozenset({"raw_parse_confidence"})
 
+# Max rows per LLM call — keeps output well within LLM_MAX_TOKENS
+_BATCH_SIZE = 5
+
 
 # ── eligibility ───────────────────────────────────────────────────────────────
 
 def _is_eligible(row: dict) -> bool:
-    return row.get("specs_extracted", {}).get("raw_parse_confidence", 0.0) > 0.0
+    if row.get("specs_extracted", {}).get("raw_parse_confidence", 0.0) <= 0.0:
+        return False
+    flags = row.get("flags", {})
+    if isinstance(flags, dict):
+        if flags.get("existing_equipment") or flags.get("not_in_total"):
+            return False
+    else:
+        # Pydantic model (pre-serialisation)
+        if getattr(flags, "existing_equipment", False) or getattr(flags, "not_in_total", False):
+            return False
+    return True
 
 
 # ── item construction ─────────────────────────────────────────────────────────
@@ -77,13 +90,16 @@ def _build_item(row: dict, idx: int, store: VectorStore) -> dict:
 
 # ── LLM call ─────────────────────────────────────────────────────────────────
 
+_CALL_TIMEOUT = 30.0  # seconds per individual API call inside call_llm
+
+
 def _call_batch(items: list[dict]) -> list[dict]:
     # Strip internal bookkeeping keys before serialising for the LLM
     clean = [{k: v for k, v in it.items() if not k.startswith("_")} for it in items]
     user_msg = AGENT_B_BATCH_USER.format(
         items_json=json.dumps(clean, ensure_ascii=False, indent=2)
     )
-    response = call_llm(AGENT_B_SYSTEM, user_msg, expect_json=True)
+    response = call_llm(AGENT_B_SYSTEM, user_msg, expect_json=True, timeout=_CALL_TIMEOUT)
 
     if isinstance(response, list):
         return response
@@ -146,15 +162,27 @@ def _store_decision(row: dict, review: dict, meta: dict, store: VectorStore) -> 
 # ── sheet-level orchestration ─────────────────────────────────────────────────
 
 def _review_sheet(sheet: dict, meta: dict, store: VectorStore) -> None:
+    total = len(sheet["rows"])
     eligible = [(i, row) for i, row in enumerate(sheet["rows"]) if _is_eligible(row)]
+    logger.info(
+        "Agent B: sheet=%r  eligible=%d/%d  (skipped: existing_equip/not_in_total/no_specs)",
+        sheet["sheet_name"], len(eligible), total,
+    )
     if not eligible:
         return
 
-    logger.info("Agent B: sheet=%r reviewing %d row(s)", sheet["sheet_name"], len(eligible))
-
     items = [_build_item(row, idx, store) for idx, (_, row) in enumerate(eligible)]
-    decisions = _call_batch(items)
-    by_index: dict[int, dict] = {int(d["index"]): d for d in decisions}
+
+    # Process in chunks to keep each LLM call within the token budget
+    by_index: dict[int, dict] = {}
+    for chunk_start in range(0, len(items), _BATCH_SIZE):
+        chunk = items[chunk_start : chunk_start + _BATCH_SIZE]
+        # Re-index within chunk so indices are 0-based for the LLM, then offset back
+        for offset, item in enumerate(chunk):
+            item["index"] = offset
+        chunk_decisions = _call_batch(chunk)
+        for d in chunk_decisions:
+            by_index[chunk_start + int(d["index"])] = d
 
     for local_idx, (_, row) in enumerate(eligible):
         decision = by_index.get(local_idx)
