@@ -139,12 +139,12 @@ See `IMPLEMENTATION_ORDER.md` for the full step-by-step guide with prompts.
 Current status:
 - [x] Step 1 — `schema.py` ✓
 - [x] Step 2 — `excel_reader.py` ✓
-- [ ] Step 3 — `text_normalizer.py`
-- [ ] Step 4 — `spec_extractor.py`
-- [ ] Step 5 — `math_validator.py`
-- [ ] Step 6 — `llm_client.py`
-- [ ] Step 7 — `store.py` (Vector DB)
-- [ ] Step 8 — `embeddings.py`
+- [x] Step 3 — `text_normalizer.py` ✓
+- [x] Step 4 — `spec_extractor.py` ✓
+- [x] Step 5 — `math_validator.py` ✓
+- [x] Step 6 — `llm_client.py` ✓
+- [x] Step 7 — `store.py` (Vector DB) ✓
+- [x] Step 8 — `embeddings.py` ✓
 - [ ] Step 9 — `agent_a_ambiguity.py`
 - [ ] Step 10 — `agent_b_deviation.py`
 - [ ] Step 11 — `build_comparison_table.py`
