@@ -17,6 +17,8 @@ VectorStore write-back:
     Both happen incrementally so each subsequent contractor benefits immediately.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import logging

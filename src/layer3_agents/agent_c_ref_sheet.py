@@ -7,6 +7,8 @@ required before evaluation can continue.
 Output: data/output/<project_id>/ref_sheet_<contractor_id>.md
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import os

@@ -7,6 +7,8 @@ for management decision-making.
 Output: data/output/<project_id>/executive_summary.md
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import os
