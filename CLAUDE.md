@@ -145,7 +145,7 @@ Current status:
 - [x] Step 6 — `llm_client.py` ✓
 - [x] Step 7 — `store.py` (Vector DB) ✓
 - [x] Step 8 — `embeddings.py` ✓
-- [ ] Step 9 — `agent_a_ambiguity.py`
+- [x] Step 9 — `agent_a_ambiguity.py` ✓
 - [ ] Step 10 — `agent_b_deviation.py`
 - [ ] Step 11 — `build_comparison_table.py`
 - [ ] Step 12 — `agent_c_ref_sheet.py`

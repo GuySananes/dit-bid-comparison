@@ -32,6 +32,27 @@ Return JSON:
 }}
 """
 
+AGENT_A_BATCH_USER = """
+Determine if each pair of part-number strings refers to the same physical product.
+
+Pairs (JSON array):
+{pairs_json}
+
+Each pair has: index, mkt_a (BOQ/approved list), mkt_b (contractor proposal),
+similarity_score (from embeddings, 0–1), context (optional extra info).
+
+Return a JSON array — one object per pair, in the same order as the input:
+[
+  {{
+    "index": 0,
+    "is_same_product": true | false,
+    "confidence": "high" | "medium" | "low",
+    "reasoning": "one sentence explanation",
+    "normalized_name": "canonical product name to store in DB"
+  }}
+]
+"""
+
 # ── Agent B — Technical Deviation ────────────────────────────────────────────
 AGENT_B_SYSTEM = """
 You are a technical reviewer for professional AV procurement.
