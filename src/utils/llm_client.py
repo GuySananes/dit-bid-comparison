@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 
 import anthropic
@@ -20,15 +21,29 @@ class LLMError(Exception):
 
 
 def _strip_fences(text: str) -> str:
-    """Remove markdown code fences the model occasionally wraps JSON in."""
+    """Extract JSON from a response that may include prose, fences, or both."""
     stripped = text.strip()
+
+    # 1. Prefer a fenced JSON block anywhere in the response
+    fence_match = re.search(r"```(?:json)?\s*\n([\s\S]*?)\n```", stripped)
+    if fence_match:
+        return fence_match.group(1).strip()
+
+    # 2. Whole response is a bare fence (no language tag, no newline before ```)
     if stripped.startswith("```"):
-        # Drop opening fence line (```json or ```)
         stripped = stripped.split("\n", 1)[-1]
-        # Drop closing fence
         if stripped.endswith("```"):
             stripped = stripped[: stripped.rfind("```")]
-    return stripped.strip()
+        return stripped.strip()
+
+    # 3. Response has preamble text — locate the outermost [ ... ] or { ... }
+    for open_ch, close_ch in (("[", "]"), ("{", "}")):
+        start = stripped.find(open_ch)
+        end = stripped.rfind(close_ch)
+        if start != -1 and end > start:
+            return stripped[start : end + 1]
+
+    return stripped
 
 
 def call_llm(
