@@ -113,11 +113,23 @@ dit-bid-comparison/
 
 ## Setup
 
-```bash
+```powershell
 git clone <repo>
 cd dit-bid-comparison
 pip install -r requirements.txt
-cp config/settings.example.py config/settings.py
-# add your ANTHROPIC_API_KEY to settings.py
-python main.py --input data/raw/ --project "Project Name"
+
+# Set required environment variable (PowerShell)
+$env:ANTHROPIC_API_KEY = "sk-ant-..."
+
+# Optional overrides (defaults shown)
+# $env:LLM_MODEL = "claude-haiku-4-5-20251001"
+# $env:LLM_MAX_TOKENS = "4096"
+# $env:EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+# $env:SIMILARITY_THRESHOLD_HIGH = "0.92"
+# $env:SIMILARITY_THRESHOLD_LOW = "0.65"
+
+py main.py --input data/raw/ --project "Project Name"
 ```
+
+> **Note:** All configuration is read from environment variables — there is no `settings.py` to edit.
+> For persistent configuration, add the variables to your shell profile or a `.env` loader.
